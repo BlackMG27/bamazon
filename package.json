@@ -1,0 +1,25 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "This a node CLI and MySQL take on an extremely simple amazon app",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlackMG27/bamazon.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BlackMG27/bamazon/issues"
+  },
+  "homepage": "https://github.com/BlackMG27/bamazon#readme",
+  "dependencies": {
+    "console-table-printer": "^1.0.0-beta13",
+    "inquirer": "^6.2.2",
+    "mysql": "^2.16.0"
+  }
+}
