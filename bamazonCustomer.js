@@ -29,12 +29,41 @@ function showProducts() {
             console.log(`An error has occurred: ${err}`);
         }
         //create a table
-        const pTable = new Table({style: 'fatBorder'});
+        const pTable = new Table({
+            style: 'fatBorder',
+            columns: [
+                {
+                    name: 'item_id',
+                    alignment: 'left'
+                }, {
+                    name: 'product_name',
+                    alignment: 'left'
+                }, {
+                    name: 'price',
+                    alignment: 'left'
+                }, {
+                    name: 'department_name',
+                    alignment: 'left'
+                }, {
+                    name: 'stock_quantity',
+                    alignment: 'left'
+                }
+            ]
+        });
         for (ent in res) {
             //print a table
-            pTable.addRow({item_id: res[ent].item_id, product_name: res[ent].product_name, price: res[ent].price, department_name: res[ent].department_name, stock_quantity: res[ent].stock_quantity});
+            pTable.addRow({
+                item_id: res[ent].item_id,
+                product_name: res[ent].product_name,
+                price: res[ent]
+                    .price
+                    .toFixed(2),
+                department_name: res[ent].department_name,
+                stock_quantity: res[ent].stock_quantity
+            });
         }
         pTable.printTable();
+        askCustomer();
     })
 }
 
@@ -61,8 +90,10 @@ function askCustomer() {
                 else {
                     if (ans.amount > res[0].stock_quantity) {
                         console.log(`There's not enough for that order! Try Again`);
+                        //asks the customer to enter the item again
                         askCustomer();
                     } else {
+                        //sends info to update the table
                         updateProducts(ans.item, ans.amount);
                     }
                 }
@@ -79,11 +110,67 @@ function updateProducts(id, stock) {
         
         //take the stock quantity
         for (ent in res) {
+            //updates the stock_quantity
             updateStockQuantity(id, res[ent].stock_quantity, stock);
+            //updates the products sales
             updateProductSales(id, res[ent].product_sales, stock, res[ent].price);
-            reportPrice(res[ent].price, stock);
+            //tells the user how much they owe
+            reportPrice(res[ent].price, stock, res[ent].product_name);
+            promptNext()
         }
     });
+
+}
+function updateStockQuantity(id, start, update) {
+    //subtract the update from the start value
+    start = start - update;
+    //add the update to the table
+    connection.query(`UPDATE products SET ? WHERE ? `, [
+        {
+            stock_quantity: start
+        }, {
+            item_id: id
+        }
+    ], function (err, data) {
+        //if there is an error, then show the error
+        if (err) 
+            throw err;
+
+            // print success to the console console.log(`\nStock_quantity has been
+            // updated!\n`);
+        }
+    )
+}
+
+function updateProductSales(id, sales, update, price) {
+    //add the (price * stock) to the sales
+    sales = sales + (price * update);
+    //updates the table
+    connection.query(`UPDATE products SET ? WHERE ?`, [
+        {
+            product_sales: sales
+        }, {
+            item_id: id
+        }
+    ], function (err, data) {
+        //if there is an error, show the error
+        if (err) 
+            throw err;
+
+            // else print the success to the console console.log(`\nProduct Sales have been
+            // updated\n`);
+        }
+    )
+}
+
+function reportPrice(price, stock, item) {
+    //makes the price = the new price
+    price = price * stock;
+    //prints the total cost to the console
+    console.log(`\n Alright! You owe $${price} for ${item}. \n`);
+}
+
+function promptNext() {
     inquire.prompt({
         name: 'result',
         message: 'Would you like to buy something else?',
@@ -95,52 +182,10 @@ function updateProducts(id, stock) {
         .then(function (ans) {
             if (ans.result === 'YES') {
                 showProducts();
-                askCustomer();
             } else {
                 return;
             }
         })
 }
 
-function updateStockQuantity(id, start, update) {
-    //subtract the update from the start value
-    start = start - update;
-    console.log(start);
-    //add the update to the table
-    connection.query(`UPDATE products SET ? WHERE ? `, [
-        {
-            stock_quantity: start
-        }, {
-            item_id: id
-        }
-    ], function (err, data) {
-        if (err) 
-            throw err;
-        console.log(`\nStock_quantity has been updated!\n`);
-    })
-}
-
-function updateProductSales(id, sales, update, price) {
-    //add the (price * stock) to the sales
-    sales = sales + (price * update);
-    //update the table
-    connection.query(`UPDATE products SET ? WHERE ?`, [
-        {
-            product_sales: sales
-        }, {
-            item_id: id
-        }
-    ], function (err, data) {
-        if (err) 
-            throw err;
-        console.log(`\nProduct Sales have been updated\n`);
-    })
-}
-
-function reportPrice(price, stock) {
-    price = price * stock;
-    console.log(`\nAlright! You owe ${price}. \n`);
-}
-
 showProducts();
-askCustomer();
