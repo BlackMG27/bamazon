@@ -145,4 +145,45 @@ function showLowInventory() {
     })
 }
 
+function addToInventory() {
+    //asks the manager for the id of the item he wants to update and how many items they want to add
+    inquire.prompt([{
+            name: 'update_id',
+            message: "Which item's stock quantity would you like to update? (Use the item_id)",
+            type: 'input'
+        },
+        {
+            name: 'update_amount',
+            message: "How much would you like to add?",
+            type: 'input'
+        }
+    ]).then(function (ans) {
+        const addQuery = `SELECT * FROM products WHERE item_id = '${ans.update_id}'`
+        connection.query(addQuery, function (err, data) {
+            if (err) throw err;
+            for (ent in data) {
+                updateInventory(ans.update_id, data[ent].stock_quantity, ans.update_amount);
+            }
+        })
+        askManager();
+
+    })
+}
+//function to add to the database's inventory
+function updateInventory(id, stock, update) {
+    stock = stock + update;
+    connection.query(`UPDATE products SET ? WHERE ?`,
+        [{
+                stock_quantity: stock
+            },
+            {
+                item_id: id
+            }
+        ],
+        function (err, res) {
+            if (err) throw err;
+            console.log(`\nInventory was successfully updated\n`);
+        })
+}
+
 askManager();
