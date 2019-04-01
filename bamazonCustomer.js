@@ -47,4 +47,41 @@ function showProducts() {
         pTable.printTable();
     })
 }
+
+
+function askCustomer() {
+    inquire.prompt([{
+            type: 'input',
+            message: 'Enter the item id of the product you want.',
+            name: 'item'
+        },
+        {
+            type: 'input',
+            message: "How much would you like to buy?",
+            name: 'amount'
+        }
+    ]).then(function (ans) {
+        //shows the then promise works
+        console.log(ans.item, ans.amount);
+        //select the product of the item_id
+        let item_query = `SELECT * FROM products WHERE item_id = '${ans.item}'`
+        connection.query(item_query, function (err, res) {
+            if (err) throw err;
+            else {
+                if (ans.amount > res[0].stock_quantity) {
+                    console.log(`There's not enough for that order! Try Again`);
+                    askCustomer();
+                } else {
+                    updateProducts(ans.item, ans.amount);
+                }
+            }
+        })
+    })
+}
+
+function updateProducts(id, stock) {
+    console.log(id, stock);
+}
+
 showProducts();
+askCustomer();
