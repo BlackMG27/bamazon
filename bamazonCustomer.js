@@ -1,6 +1,8 @@
 let inquire = require('inquirer');
 let mysql = require('mysql');
-const {Table} = require('console-table-printer');
+const {
+    Table
+} = require('console-table-printer');
 
 let connection = mysql.createConnection({
     host: "localhost",
@@ -17,7 +19,7 @@ let connection = mysql.createConnection({
 });
 
 connection.connect(function (err) {
-    if (err) 
+    if (err)
         throw err;
     console.log("connected as id " + connection.threadId + "\n");
 });
@@ -31,24 +33,22 @@ function showProducts() {
         //create a table
         const pTable = new Table({
             style: 'fatBorder',
-            columns: [
-                {
-                    name: 'item_id',
-                    alignment: 'left'
-                }, {
-                    name: 'product_name',
-                    alignment: 'left'
-                }, {
-                    name: 'price',
-                    alignment: 'left'
-                }, {
-                    name: 'department_name',
-                    alignment: 'left'
-                }, {
-                    name: 'stock_quantity',
-                    alignment: 'left'
-                }
-            ]
+            columns: [{
+                name: 'item_id',
+                alignment: 'left'
+            }, {
+                name: 'product_name',
+                alignment: 'left'
+            }, {
+                name: 'price',
+                alignment: 'left'
+            }, {
+                name: 'department_name',
+                alignment: 'left'
+            }, {
+                name: 'stock_quantity',
+                alignment: 'left'
+            }]
         });
         for (ent in res) {
             //print a table
@@ -68,24 +68,22 @@ function showProducts() {
 }
 
 function askCustomer() {
-    inquire.prompt([
-        {
+    inquire.prompt([{
             type: 'input',
             message: 'Enter the item id of the product you want.',
             name: 'item'
         }, {
-                type: 'input',
-                message: "How much would you like to buy?",
-                name: 'amount'
-            }
-        ])
+            type: 'input',
+            message: "How much would you like to buy?",
+            name: 'amount'
+        }])
         .then(function (ans) {
             //shows the then promise works
             console.log(ans.item, ans.amount);
             //select the product of the item_id
             let item_query = `SELECT * FROM products WHERE item_id = '${ans.item}'`
             connection.query(item_query, function (err, res) {
-                if (err) 
+                if (err)
                     throw err;
                 else {
                     if (ans.amount > res[0].stock_quantity) {
@@ -105,9 +103,9 @@ function updateProducts(id, stock) {
     //grab the stock quantity
     let idQueryURL = `SELECT * FROM products WHERE item_id = '${id}'`;
     connection.query(idQueryURL, function (err, res) {
-        if (err) 
+        if (err)
             throw err;
-        
+
         //take the stock quantity
         for (ent in res) {
             //updates the stock_quantity
@@ -121,46 +119,41 @@ function updateProducts(id, stock) {
     });
 
 }
+
 function updateStockQuantity(id, start, update) {
     //subtract the update from the start value
-    start = start - update;
+    start = start - parseInt(update);
     //add the update to the table
-    connection.query(`UPDATE products SET ? WHERE ? `, [
-        {
-            stock_quantity: start
-        }, {
-            item_id: id
-        }
-    ], function (err, data) {
+    connection.query(`UPDATE products SET ? WHERE ? `, [{
+        stock_quantity: start
+    }, {
+        item_id: id
+    }], function (err, data) {
         //if there is an error, then show the error
-        if (err) 
+        if (err)
             throw err;
 
-            // print success to the console console.log(`\nStock_quantity has been
-            // updated!\n`);
-        }
-    )
+        // print success to the console console.log(`\nStock_quantity has been
+        // updated!\n`);
+    })
 }
 
 function updateProductSales(id, sales, update, price) {
     //add the (price * stock) to the sales
     sales = sales + (price * update);
     //updates the table
-    connection.query(`UPDATE products SET ? WHERE ?`, [
-        {
-            product_sales: sales
-        }, {
-            item_id: id
-        }
-    ], function (err, data) {
+    connection.query(`UPDATE products SET ? WHERE ?`, [{
+        product_sales: sales
+    }, {
+        item_id: id
+    }], function (err, data) {
         //if there is an error, show the error
-        if (err) 
+        if (err)
             throw err;
 
-            // else print the success to the console console.log(`\nProduct Sales have been
-            // updated\n`);
-        }
-    )
+        // else print the success to the console console.log(`\nProduct Sales have been
+        // updated\n`);
+    })
 }
 
 function reportPrice(price, stock, item) {
@@ -172,11 +165,11 @@ function reportPrice(price, stock, item) {
 
 function promptNext() {
     inquire.prompt({
-        name: 'result',
-        message: 'Would you like to buy something else?',
-        choices: [
-            'YES', 'NO'
-        ],
+            name: 'result',
+            message: 'Would you like to buy something else?',
+            choices: [
+                'YES', 'NO'
+            ],
             type: 'list'
         })
         .then(function (ans) {
