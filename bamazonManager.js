@@ -22,6 +22,7 @@ connection.connect(function (err) {
     if (err)
         throw err;
     console.log("connected as id " + connection.threadId + "\n");
+    askManager();
 });
 
 function askManager() {
@@ -103,10 +104,11 @@ function showProducts() {
 function showLowInventory() {
     //show all the items where stock_quantity is less than 400
     let lowQuery = `SELECT * FROM products WHERE stock_quantity < 400`;
+    //make the query to the database
     connection.query(lowQuery, function (err, res) {
         if (err)
             throw err;
-
+        //makes the table
         const lTable = new Table({
             style: 'fatBorder',
             columns: [{
@@ -221,10 +223,9 @@ function addNewProduct() {
             //otherwise print the success message
             console.log(`\n Item successfully added \n`);
             console.log(`\n\n ----------------------------------------- \n\n`);
+            //returns to the menu
             askManager();
         })
 
     })
 }
-
-askManager();

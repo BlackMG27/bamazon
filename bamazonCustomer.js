@@ -63,6 +63,7 @@ function showProducts() {
             });
         }
         pTable.printTable();
+        console.log(`\n\n ----------------------------------------- \n\n`);
         askCustomer();
     })
 }
