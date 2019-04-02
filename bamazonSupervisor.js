@@ -30,7 +30,7 @@ function askSupervisor() {
     inquire.prompt({
         name: 'choice',
         message: 'Hello! What would you like to do?',
-        choices: ['View Product Sales by Department', 'Create New Department'],
+        choices: ['View Product Sales by Department', 'Create New Department', 'EXIT'],
         type: 'list'
     }).then(function (ans) {
         console.log(`\n\n ----------------------------------------- \n\n`);
@@ -41,6 +41,9 @@ function askSupervisor() {
                 break;
             case 'Create New Department':
                 createDepartment();
+                break;
+            case "EXIT":
+                return;
                 break;
         }
     })
@@ -100,5 +103,31 @@ SELECT
         pTable.printTable();
         console.log(`\n\n ----------------------------------------- \n\n`);
         askSupervisor();
+    })
+}
+
+function createDepartment() {
+    inquire.prompt([{
+            name: 'department',
+            message: 'What you like to call this department?',
+            type: 'input'
+        },
+        {
+            name: 'over_head_costs',
+            message: `What's this department's over head cost?`,
+            type: 'input'
+        }
+    ]).then(function (ans) {
+        connection.query(`INSERT INTO departments SET ?`, {
+            department_name: ans.department,
+            over_head_costs: ans.over_head_costs
+        }, function (err, res) {
+            if (err) throw err;
+            //otherwise print the success message
+            console.log(`\n Department successfully Created \n`);
+            console.log(`\n\n ----------------------------------------- \n\n`);
+            //returns to the menu
+            askSupervisor();
+        })
     })
 }
