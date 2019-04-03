@@ -34,7 +34,6 @@ function askSupervisor() {
         type: 'list'
     }).then(function (ans) {
         console.log(`\n\n ----------------------------------------- \n\n`);
-        console.log(ans.choice);
         switch (ans.choice) {
             case 'View Product Sales by Department':
                 viewProducts();
@@ -43,7 +42,6 @@ function askSupervisor() {
                 createDepartment();
                 break;
             case "EXIT":
-                return;
                 break;
         }
     })

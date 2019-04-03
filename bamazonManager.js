@@ -164,11 +164,15 @@ function addToInventory() {
             type: 'input'
         }])
         .then(function (ans) {
+            //sets up the query
             const addQuery = `SELECT * FROM products WHERE item_id = '${ans.update_id}'`
+            //make the connection to the database with the query
             connection.query(addQuery, function (err, data) {
+                //if there is an error show the error
                 if (err)
                     throw err;
                 for (ent in data) {
+                    //send the info to the updateInventory function
                     updateInventory(ans.update_id, data[ent].stock_quantity, ans.update_amount);
                 }
             })
@@ -178,14 +182,19 @@ function addToInventory() {
 }
 //function to add to the database's inventory
 function updateInventory(id, stock, update) {
+    //makes the new stock quantity after being added
     stock = stock + parseInt(update);
+    //makes the query to the database
     connection.query(`UPDATE products SET ? WHERE ?`, [{
+        //updates the database with the new stock quantity
         stock_quantity: stock
     }, {
         item_id: id
     }], function (err, res) {
+        //if there is an error then throw error
         if (err)
             throw err;
+        //send a success message
         console.log(`\nInventory was successfully updated\n`);
         console.log(`\n\n ----------------------------------------- \n\n`);
         askManager();

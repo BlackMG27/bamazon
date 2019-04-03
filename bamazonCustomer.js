@@ -51,7 +51,7 @@ function showProducts() {
             }]
         });
         for (ent in res) {
-            //print a table
+            //set the rows
             pTable.addRow({
                 item_id: res[ent].item_id,
                 product_name: res[ent].product_name,
@@ -62,8 +62,10 @@ function showProducts() {
                 stock_quantity: res[ent].stock_quantity
             });
         }
+        //prints the table
         pTable.printTable();
         console.log(`\n\n ----------------------------------------- \n\n`);
+        //returns to menu
         askCustomer();
     })
 }
@@ -115,7 +117,8 @@ function updateProducts(id, stock) {
             updateProductSales(id, res[ent].product_sales, stock, res[ent].price);
             //tells the user how much they owe
             reportPrice(res[ent].price, stock, res[ent].product_name);
-            promptNext()
+            //leads to another menu 
+            promptNext();
         }
     });
 
@@ -133,9 +136,6 @@ function updateStockQuantity(id, start, update) {
         //if there is an error, then show the error
         if (err)
             throw err;
-
-        // print success to the console console.log(`\nStock_quantity has been
-        // updated!\n`);
     })
 }
 
@@ -151,9 +151,6 @@ function updateProductSales(id, sales, update, price) {
         //if there is an error, show the error
         if (err)
             throw err;
-
-        // else print the success to the console console.log(`\nProduct Sales have been
-        // updated\n`);
     })
 }
 
